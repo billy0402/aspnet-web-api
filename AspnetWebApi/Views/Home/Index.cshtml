@@ -7,6 +7,9 @@
     $(document).ready(function () {
         var apiUrl = 'http://localhost:63608/api/Customer';
         loadData();
+        $('#btnCreate').on('click', createData);
+        $('#btnEdit').on('click', editData);
+        $('#btnDelete').on('click', deleteData);
 
         function loadData() {
             $.ajax({
@@ -16,6 +19,7 @@
                     const tableBody = $('#tableShow tbody');
                     tableBody.empty();
                     for (const customer of data) {
+                        const btnSelect = 'btnSelect' + customer.fId;
                         tableBody.append(`\
                         <tr>
                             <td>${customer.fId}</td>
@@ -23,9 +27,117 @@
                             <td>${customer.fPhone}</td>
                             <td>${customer.fEmail}</td>
                             <td>${customer.fAddress}</td>
+                            <td>
+                                 <input type="button" id="${btnSelect}" value="選取"  class="btn btn-info" />
+                            </td>
                         </tr>
                         `);
+                        $(`#${btnSelect}`).on('click', { fId: customer.fId }, selectData);
                     }
+
+                    clearData();
+                }
+            });
+        }
+
+        function clearData() {
+            $('#fId').val('');
+            $('#fName').val('');
+            $('#fPhone').val('');
+            $('#fEmail').val('');
+            $('#fAddress').val('');
+        }
+
+        function selectData(event) {
+            const fId = event.data.fId;
+            $.ajax({
+                url: `${apiUrl}?fId=${encodeURI(fId)}`,
+                type: 'GET',
+                success: function (data) {
+                    $('#fId').val(data.fId);
+                    $('#fName').val(data.fName);
+                    $('#fPhone').val(data.fPhone);
+                    $('#fEmail').val(data.fEmail);
+                    $('#fAddress').val(data.fAddress);
+                }
+            });
+        }
+
+        function createData() {
+            const check = confirm('確定要新增嗎?');
+            if (!check) {
+                return;
+            }
+
+            const data = {
+                fName: $('#fName').val(),
+                fPhone: $('#fPhone').val(),
+                fEmail: $('#fEmail').val(),
+                fAddress: $('#fAddress').val(),
+            };
+
+            $.ajax({
+                url: apiUrl,
+                type: 'POST',
+                data: data,
+                success: function (result) {
+                    if (result == 0) {
+                        alert('新增失敗');
+                    }
+
+                    alert('新增成功');
+                    loadData();
+                }
+            });
+        }
+
+        function editData() {
+            const check = confirm('確定要修改嗎?');
+            if (!check) {
+                return;
+            }
+
+            const fId = $('#fId').val();
+            const data = {
+                fName: $('#fName').val(),
+                fPhone: $('#fPhone').val(),
+                fEmail: $('#fEmail').val(),
+                fAddress: $('#fAddress').val(),
+            };
+
+            $.ajax({
+                url: `${apiUrl}?fId=${encodeURI(fId)}`,
+                type: 'PUT',
+                data: data,
+                success: function (result) {
+                    if (result == 0) {
+                        alert('修改失敗');
+                    }
+
+                    alert('修改成功');
+                    loadData();
+                }
+            });
+        }
+
+        function deleteData() {
+            const check = confirm('確定要刪除嗎?');
+            if (!check) {
+                return;
+            }
+
+            const fId = $('#fId').val();
+
+            $.ajax({
+                url: `${apiUrl}?fId=${encodeURI(fId)}`,
+                type: 'DELETE',
+                success: function (result) {
+                    if (result == 0) {
+                        alert('刪除失敗');
+                    }
+
+                    alert('刪除成功');
+                    loadData();
                 }
             });
         }
@@ -33,6 +145,36 @@
 </script>
 
 <h2>@ViewBag.Title</h2>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">客戶管理</div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label for="fId">編號</label>
+            <input type="text" id="fId" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label for="fName">姓名</label>
+            <input type="tel" id="fName" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="fPhone">電話</label>
+            <input type="tel" id="fPhone" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="fEmail">信箱</label>
+            <input type="email" id="fEmail" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="fAddress">地址</label>
+            <input type="text" id="fAddress" class="form-control" required />
+        </div>
+
+        <input type="button" id="btnCreate" value="新增" class="btn btn-primary" />
+        <input type="button" id="btnEdit" value="編輯" class="btn btn-success" />
+        <input type="button" id="btnDelete" value="刪除" class="btn btn-danger" />
+    </div>
+</div>
 
 <table id="tableShow" class="table">
     <thead>
