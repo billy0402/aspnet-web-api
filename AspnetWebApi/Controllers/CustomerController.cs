@@ -28,18 +28,67 @@ namespace AspnetWebApi.Controllers
         }
 
         // POST: api/Customer
-        public void Post([FromBody] string value)
+        public int Post([FromBody] tCustomer data)
         {
+            int num = 0;
+            try
+            {
+                tCustomer customer = new tCustomer();
+                customer.fName = data.fName;
+                customer.fPhone = data.fPhone;
+                customer.fEmail = data.fEmail;
+                customer.fAddress = data.fAddress;
+                db.tCustomer.Add(customer);
+                num = db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                num = 0;
+            }
+
+
+            return num;
         }
 
         // PUT: api/Customer/5
-        public void Put(int id, [FromBody] string value)
+        public int Put(int fId, [FromBody] tCustomer data)
         {
+            int num = 0;
+            try
+            {
+                tCustomer customer = db.tCustomer.Where(m => m.fId == fId).FirstOrDefault();
+                customer.fName = data.fName;
+                customer.fPhone = data.fPhone;
+                customer.fEmail = data.fEmail;
+                customer.fAddress = data.fAddress;
+                num = db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                num = 0;
+            }
+
+
+            return num;
         }
 
         // DELETE: api/Customer/5
-        public void Delete(int id)
+        public int Delete(int fId)
         {
+            int num = 0;
+            try
+            {
+                tCustomer customer = db.tCustomer.Where(m => m.fId == fId).FirstOrDefault();
+                db.tCustomer.Remove(customer);
+                num = db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                num = 0;
+            }
+
+
+            return num;
         }
     }
 }
