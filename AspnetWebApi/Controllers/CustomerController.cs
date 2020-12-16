@@ -5,29 +5,35 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
+using AspnetWebApi.Models;
+
 namespace AspnetWebApi.Controllers
 {
     public class CustomerController : ApiController
     {
+        dbCustomerEntities db = new dbCustomerEntities();
+
         // GET: api/Customer
-        public IEnumerable<string> Get()
+        public List<tCustomer> Get()
         {
-            return new string[] { "value1", "value2" };
+            var customers = db.tCustomer;
+            return customers.ToList();
         }
 
         // GET: api/Customer/5
-        public string Get(int id)
+        public tCustomer Get(int fId)
         {
-            return "value";
+            var customers = db.tCustomer.Where(m => m.fId == fId).FirstOrDefault();
+            return customers;
         }
 
         // POST: api/Customer
-        public void Post([FromBody]string value)
+        public void Post([FromBody] string value)
         {
         }
 
         // PUT: api/Customer/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 
