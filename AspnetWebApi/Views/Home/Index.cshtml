@@ -1,7 +1,49 @@
 ﻿
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "呼叫 WebApi 進行非同步新增、修改、刪除";
 }
 
-<h2>Index</h2>
+<script>
+    $(document).ready(function () {
+        var apiUrl = 'http://localhost:63608/api/Customer';
+        loadData();
 
+        function loadData() {
+            $.ajax({
+                url: apiUrl,
+                type: 'GET',
+                success: function (data) {
+                    const tableBody = $('#tableShow tbody');
+                    tableBody.empty();
+                    for (const customer of data) {
+                        tableBody.append(`\
+                        <tr>
+                            <td>${customer.fId}</td>
+                            <td>${customer.fName}</td>
+                            <td>${customer.fPhone}</td>
+                            <td>${customer.fEmail}</td>
+                            <td>${customer.fAddress}</td>
+                        </tr>
+                        `);
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+<h2>@ViewBag.Title</h2>
+
+<table id="tableShow" class="table">
+    <thead>
+        <tr>
+            <th>編號</th>
+            <th>姓名</th>
+            <th>電話</th>
+            <th>信箱</th>
+            <th>地址</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
